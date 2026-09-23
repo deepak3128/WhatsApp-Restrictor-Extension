@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>WhatsApp Focus Lock</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header class="status" id="statusBox">
+    <div class="status-label" id="statusLabel">Loading…</div>
+    <div class="status-time" id="statusTime"></div>
+    <div class="status-sub" id="statusSub"></div>
+  </header>
+
+  <p class="locked-note" id="lockedNote" hidden>Settings are locked while WhatsApp is locked, so you can't change them in a weak moment.</p>
+
+  <form id="settingsForm" class="settings" autocomplete="off">
+    <div class="field">
+      <label for="sessionMinutes">Time per session</label>
+      <div class="input-row">
+        <input type="number" id="sessionMinutes" min="1" max="600" step="1">
+        <span>minutes</span>
+      </div>
+      <div class="hint">How long you can use WhatsApp before it locks.</div>
+    </div>
+
+    <div class="field">
+      <label for="cooldownMinutes">Locked for</label>
+      <div class="input-row">
+        <input type="number" id="cooldownMinutes" min="1" max="1440" step="1">
+        <span>minutes</span>
+      </div>
+      <div class="chips" id="cooldownChips">
+        <button type="button" data-min="30">30 min</button>
+        <button type="button" data-min="60">1 hr</button>
+        <button type="button" data-min="120">2 hrs</button>
+        <button type="button" data-min="180">3 hrs</button>
+        <button type="button" data-min="240">4 hrs</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="dailyLimitMinutes">Daily limit</label>
+      <div class="input-row">
+        <input type="number" id="dailyLimitMinutes" min="1" max="1440" step="1">
+        <span>minutes per day</span>
+      </div>
+      <div class="hint">Total WhatsApp time allowed each day. Resets at midnight.</div>
+    </div>
+
+    <label class="toggle">
+      <input type="checkbox" id="enabled">
+      <span>Focus Lock is on</span>
+    </label>
+
+    <button type="submit" class="save" id="saveBtn">Save settings</button>
+    <div class="msg" id="msg" role="status"></div>
+  </form>
+
+  <script src="popup.js"></script>
+</body>
+</html>
