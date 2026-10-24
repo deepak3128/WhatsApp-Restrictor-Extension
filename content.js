@@ -16,9 +16,10 @@
   };
 
   let settings = { ...DEFAULTS };
-  let state = { sessionUsedMs: 0, cooldownUntil: 0, dailyDate: "", dailyUsedMs: 0 };
+  let state = { sessionUsedMs: 0, cooldownUntil: 0, dailyDate: "", dailyUsedMs: 0, dailyOpens: 0 };
   let lastTick = Date.now();
   let ready = false;
+  let countedThisLoad = false; // makes sure this page-load only counts as one "open"
 
   // ---------- helpers ----------
   function todayKey() {
@@ -47,6 +48,7 @@
     if (state.dailyDate !== key) {
       state.dailyDate = key;
       state.dailyUsedMs = 0;
+      state.dailyOpens = 0;
     }
   }
 
@@ -172,12 +174,18 @@
     const delta = Math.min(now - lastTick, 2000); // ignore long gaps (sleep, throttled timers)
     lastTick = now;
 
+    rolloverDay();
+
+    if (document.visibilityState === "visible" && !countedThisLoad) {
+      countedThisLoad = true;
+      state.dailyOpens += 1;
+      save();
+    }
+
     if (!settings.enabled) {
       hideAll();
       return;
     }
-
-    rolloverDay();
 
     let lock = getLock(now);
     if (!lock) {

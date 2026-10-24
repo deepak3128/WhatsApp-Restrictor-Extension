@@ -39,6 +39,23 @@ body {
 .status-sub { font-size: 13px; color: #b9d0c7; }
 .status.locked .status-sub { color: #f3d3ca; }
 
+.stats {
+  display: flex;
+  border-bottom: 1px solid var(--line);
+}
+.stat {
+  flex: 1;
+  padding: 14px 12px;
+  text-align: center;
+}
+.stat + .stat { border-left: 1px solid var(--line); }
+.stat-num {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 24px;
+  font-variant-numeric: tabular-nums;
+}
+.stat-label { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
 .locked-note {
   margin: 0;
   padding: 10px 20px;

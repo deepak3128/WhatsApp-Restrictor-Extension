@@ -10,7 +10,7 @@ const $ = (id) => document.getElementById(id);
 const fields = ["sessionMinutes", "cooldownMinutes", "dailyLimitMinutes"];
 
 let settings = { ...DEFAULTS };
-let state = { sessionUsedMs: 0, cooldownUntil: 0, dailyDate: "", dailyUsedMs: 0 };
+let state = { sessionUsedMs: 0, cooldownUntil: 0, dailyDate: "", dailyUsedMs: 0, dailyOpens: 0 };
 
 function todayKey() {
   const d = new Date();
@@ -71,6 +71,10 @@ function renderStatus() {
     $("statusTime").textContent = fmt(Math.min(sessionLeft, dailyLeft));
     $("statusSub").textContent = `${minutesLabel(dailyLeft)} left today`;
   }
+
+  const isToday = state.dailyDate === todayKey();
+  $("statTime").textContent = minutesLabel(isToday ? state.dailyUsedMs : 0);
+  $("statOpens").textContent = isToday ? state.dailyOpens : 0;
 
   const locked = !!lock;
   $("lockedNote").hidden = !locked;
