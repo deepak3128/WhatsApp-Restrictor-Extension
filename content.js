@@ -4,6 +4,7 @@
 //  - You get a "session" of X minutes of visible WhatsApp time.
 //  - When the session is used up, WhatsApp locks for the cooldown you chose.
 //  - Separately, a daily total limit locks WhatsApp until midnight.
+//  - You can also lock it instantly from the popup ("Lock WhatsApp now").
 //  - Time only counts while the WhatsApp tab is visible.
 
 (() => {
@@ -135,7 +136,7 @@
     pillEl.classList.remove("show");
     if (lock.type === "cooldown") {
       overlayTitle.textContent = "WhatsApp is locked";
-      overlayNote.textContent = "Your session is over. Go back to studying; it opens again when the timer ends.";
+      overlayNote.textContent = "Go back to studying; it opens again when the timer ends.";
     } else {
       overlayTitle.textContent = "Daily limit reached";
       overlayNote.textContent = "You've used today's WhatsApp time. It opens again at midnight.";
@@ -167,6 +168,13 @@
     pillEl.classList.remove("show");
   }
 
+  // Counts as "actively using WhatsApp" only when this tab is the visible tab
+  // AND the browser window itself has focus (so switching to another app,
+  // not just another tab, correctly pauses the timer).
+  function isActive() {
+    return document.visibilityState === "visible" && document.hasFocus();
+  }
+
   // ---------- main loop ----------
   function tick() {
     if (!ready) return;
@@ -189,7 +197,7 @@
 
     let lock = getLock(now);
     if (!lock) {
-      if (document.visibilityState === "visible") {
+      if (isActive()) {
         state.sessionUsedMs += delta;
         state.dailyUsedMs += delta;
 
@@ -224,6 +232,16 @@
     lastTick = Date.now();
     tick();
     setInterval(tick, 1000);
+
+    // Chrome throttles setInterval in background tabs, so react immediately
+    // to focus/visibility changes instead of waiting for the next tick.
+    const onSwitch = () => {
+      lastTick = Date.now();
+      tick();
+    };
+    document.addEventListener("visibilitychange", onSwitch);
+    window.addEventListener("focus", onSwitch);
+    window.addEventListener("blur", onSwitch);
 
     // Keep in sync with the popup and other WhatsApp tabs.
     chrome.storage.onChanged.addListener((changes, area) => {

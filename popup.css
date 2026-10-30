@@ -22,7 +22,7 @@ body {
 .status {
   background: var(--pine);
   color: #eaf3ef;
-  padding: 18px 20px 16px;
+  padding: 18px 20px 20px;
 }
 .status.locked { background: var(--brick); }
 
@@ -36,8 +36,24 @@ body {
   margin: 4px 0 2px;
   font-variant-numeric: tabular-nums;
 }
-.status-sub { font-size: 13px; color: #b9d0c7; }
+.status-sub { font-size: 13px; color: #b9d0c7; margin-bottom: 14px; }
 .status.locked .status-sub { color: #f3d3ca; }
+
+.lock-now, .unlock-now {
+  width: 100%;
+  padding: 10px;
+  border: 0;
+  border-radius: 6px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.lock-now {
+  background: #eaf3ef;
+  color: var(--pine);
+}
+.lock-now:hover:not(:disabled) { background: #d7e8e0; }
+.lock-now:disabled { opacity: .55; cursor: not-allowed; }
 
 .stats {
   display: flex;

@@ -11,6 +11,7 @@ const fields = ["sessionMinutes", "cooldownMinutes", "dailyLimitMinutes"];
 
 let settings = { ...DEFAULTS };
 let state = { sessionUsedMs: 0, cooldownUntil: 0, dailyDate: "", dailyUsedMs: 0, dailyOpens: 0 };
+let lockedManually = false; // true once "Lock WhatsApp now" was used for the current lock
 
 function todayKey() {
   const d = new Date();
@@ -58,7 +59,7 @@ function renderStatus() {
     $("statusTime").textContent = "–";
     $("statusSub").textContent = "Turn it on below to start limiting WhatsApp.";
   } else if (lock && lock.type === "cooldown") {
-    $("statusLabel").textContent = "WhatsApp is locked. Opens in";
+    $("statusLabel").textContent = lockedManually ? "Locked for study. Opens in" : "WhatsApp is locked. Opens in";
     $("statusTime").textContent = fmt(lock.until - now);
     $("statusSub").textContent = `${minutesLabel(dailyLeft)} left today`;
   } else if (lock && lock.type === "daily") {
@@ -70,6 +71,7 @@ function renderStatus() {
     $("statusLabel").textContent = "WhatsApp is open. Session time left";
     $("statusTime").textContent = fmt(Math.min(sessionLeft, dailyLeft));
     $("statusSub").textContent = `${minutesLabel(dailyLeft)} left today`;
+    lockedManually = false;
   }
 
   const isToday = state.dailyDate === todayKey();
@@ -82,6 +84,9 @@ function renderStatus() {
   $("enabled").disabled = locked;
   $("saveBtn").disabled = locked;
   document.querySelectorAll("#cooldownChips button").forEach((b) => (b.disabled = locked));
+
+  $("lockNowBtn").hidden = locked;
+  $("lockNowBtn").disabled = !settings.enabled;
 }
 
 function highlightChip() {
@@ -116,6 +121,7 @@ async function init() {
     if (area !== "local") return;
     if (changes.state) state = { ...state, ...(changes.state.newValue || {}) };
     if (changes.settings) settings = { ...DEFAULTS, ...(changes.settings.newValue || {}) };
+    renderStatus();
   });
   setInterval(renderStatus, 1000);
 }
@@ -127,6 +133,16 @@ document.querySelectorAll("#cooldownChips button").forEach((b) => {
   });
 });
 $("cooldownMinutes").addEventListener("input", highlightChip);
+
+$("lockNowBtn").addEventListener("click", async () => {
+  if (!settings.enabled) return;
+  const minutes = Math.max(1, Math.round(Number($("cooldownMinutes").value)) || settings.cooldownMinutes);
+  state.cooldownUntil = Date.now() + minutes * MIN;
+  state.sessionUsedMs = 0;
+  lockedManually = true;
+  await chrome.storage.local.set({ state });
+  renderStatus();
+});
 
 $("settingsForm").addEventListener("submit", async (e) => {
   e.preventDefault();

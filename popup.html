@@ -10,9 +10,8 @@
     <div class="status-label" id="statusLabel">Loading…</div>
     <div class="status-time" id="statusTime"></div>
     <div class="status-sub" id="statusSub"></div>
+    <button type="button" class="lock-now" id="lockNowBtn">Lock WhatsApp now</button>
   </header>
-
-  <p class="locked-note" id="lockedNote" hidden>Settings are locked while WhatsApp is locked, so you can't change them in a weak moment.</p>
 
   <section class="stats">
     <div class="stat">
@@ -24,6 +23,8 @@
       <div class="stat-label">times opened today</div>
     </div>
   </section>
+
+  <p class="locked-note" id="lockedNote" hidden>Settings are locked while WhatsApp is locked, so you can't change them in a weak moment.</p>
 
   <form id="settingsForm" class="settings" autocomplete="off">
     <div class="field">
@@ -48,6 +49,7 @@
         <button type="button" data-min="180">3 hrs</button>
         <button type="button" data-min="240">4 hrs</button>
       </div>
+      <div class="hint">Also used as the duration when you tap "Lock WhatsApp now".</div>
     </div>
 
     <div class="field">
